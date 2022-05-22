@@ -12,6 +12,7 @@ class Home extends StatelessWidget {
             return Person.fromMap(snapshot.data()!);
           },
           toFirestore: (person, _) => person.toMap())
+      .orderBy('timestamp', descending: false)
       .snapshots();
   @override
   Widget build(BuildContext context) {

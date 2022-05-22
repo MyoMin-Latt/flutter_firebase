@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_example/model/person.dart';
 import 'package:flutter/material.dart';
 
 class AddContact extends StatefulWidget {
@@ -12,8 +13,11 @@ class _AddContactState extends State<AddContact> {
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();
   final _addressController = TextEditingController();
-  final CollectionReference _contact =
-      FirebaseFirestore.instance.collection('contact');
+  final CollectionReference<Person> _contact = FirebaseFirestore.instance
+      .collection('contact')
+      .withConverter<Person>(
+          fromFirestore: (snapshot, _) => Person.fromMap(snapshot.data()!),
+          toFirestore: (person, _) => person.toMap());
   bool _loading = false;
   bool _success = false;
   bool _error = false;
@@ -88,11 +92,14 @@ class _AddContactState extends State<AddContact> {
       _success = false;
       _error = false;
     });
-    _contact.add({
-      'name': _nameController.text,
-      'age': _ageController.text,
-      'address': _addressController.text,
-    }).then((value) {
+    _contact
+        .add(Person(
+      _nameController.text,
+      _ageController.text,
+      _addressController.text,
+      DateTime.now().millisecondsSinceEpoch,
+    ))
+        .then((value) {
       setState(() {
         _loading = false;
         _success = true;
