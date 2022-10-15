@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_example/add_contact.dart';
+import 'package:firebase_example/pages/add_contact_page.dart';
 import 'package:firebase_example/model/person.dart';
 import 'package:flutter/material.dart';
 
-class Home extends StatelessWidget {
-  Home({Key? key}) : super(key: key);
+class StreamPage extends StatelessWidget {
+  StreamPage({Key? key}) : super(key: key);
   final Stream<QuerySnapshot<Person>> _contactDocs = FirebaseFirestore.instance
       .collection('contact')
       .withConverter<Person>(
@@ -12,13 +12,14 @@ class Home extends StatelessWidget {
             return Person.fromMap(snapshot.data()!);
           },
           toFirestore: (person, _) => person.toMap())
-      .orderBy('timestamp', descending: false)
+      // .orderBy('timestamp', descending: false)
+      // .where('name', isEqualTo: 'BB')
       .snapshots();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('FireBase Tutorial'),
+        title: const Text('Stream With Data'),
       ),
       body: StreamBuilder<QuerySnapshot<Person>>(
         stream: _contactDocs,
@@ -34,8 +35,8 @@ class Home extends StatelessWidget {
                         contactDocsList?[position];
                     return ListTile(
                       title: Text(contactDoc?.data().name ?? ''),
-                      subtitle: Text(contactDoc?.data().address ?? ''),
-                      trailing: Text(contactDoc?.data().age ?? ''),
+                      subtitle: Text(contactDoc?.data().name ?? ''),
+                      trailing: Text(contactDoc?.data().phone1 ?? ''),
                     );
                   });
             } else {
@@ -53,7 +54,7 @@ class Home extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return const AddContact();
+            return const AddContactPage();
           }));
         },
         child: const Icon(Icons.add),
